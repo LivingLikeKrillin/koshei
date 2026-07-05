@@ -19,7 +19,7 @@
 #
 # Run from the koshei repo root with the stack up + a resequence checkout:
 #   docker compose up -d
-#   RESEQUENCE_DIR="/c/Users/Eisen/Desktop/Labs/[projects] resequence-twin-lab" bash scripts/run-integration-pov-gate.sh
+#   RESEQUENCE_DIR=/path/to/resequence-twin-lab bash scripts/run-integration-pov-gate.sh
 #   # expect: [GATE] PASS ... exit 0
 set -euo pipefail
 cd "$(dirname "$0")/.."

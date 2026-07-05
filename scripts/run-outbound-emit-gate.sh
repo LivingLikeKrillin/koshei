@@ -31,7 +31,7 @@
 #
 # Run from the koshei repo root with the main stack up (postgres+temporal ALREADY RUNNING) + a twin checkout:
 #   docker compose up -d          # (postgres 15432 + temporal 7233 — reused, NOT restarted here)
-#   TWIN_DIR="/c/Users/Eisen/Desktop/Labs/[projects] resequence-twin-lab" bash scripts/run-outbound-emit-gate.sh
+#   TWIN_DIR=/path/to/resequence-twin-lab bash scripts/run-outbound-emit-gate.sh
 #   # expect: [GATE] PASS run-outbound-emit-gate.sh ... exit 0
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -110,7 +110,7 @@ fail() {
 }
 
 # Cross-repo dependency: the twin checkout (the dir containing control/pom.xml). Fail-closed if unset/missing.
-TWIN_DIR="${TWIN_DIR:-C:/Users/Eisen/Desktop/Labs/[projects] resequence-twin-lab}"
+TWIN_DIR="${TWIN_DIR:-}"
 [ -f "$TWIN_DIR/control/pom.xml" ] || fail "no control/pom.xml under TWIN_DIR='$TWIN_DIR' — point TWIN_DIR at the resequence-twin-lab checkout"
 # Windows-mixed canonical path so the twin JVM resolves it (an MSYS /c/... path breaks a native JVM -D).
 CANON="$(native_path "$(pwd)/model/recipe-setpoints.yaml")"

@@ -21,7 +21,7 @@
 #
 # Run from the koshei repo root with the stack up + a sparkplug-governance-lab checkout:
 #   docker compose up -d
-#   LAB_DIR="/c/Users/Eisen/Desktop/Labs/[oss]/sparkplug-governance-lab" bash scripts/run-r2-ncmd-gate.sh
+#   LAB_DIR=/path/to/sparkplug-governance-lab bash scripts/run-r2-ncmd-gate.sh
 #   # expect: [GATE] PASS run-r2-ncmd-gate.sh ... exit 0
 set -euo pipefail
 cd "$(dirname "$0")/.."
