@@ -1,0 +1,15 @@
+id: opcua.call
+version: 1.0.0
+displayName: "OPC-UA activate (named state transition)"
+description: "Invoke an OPC-UA command/method (e.g. ApplyRecipe); IRREVERSIBLE; human-gated; rising-edge confirm-by-read"
+category: external
+params: []
+inputs:  [ { name: rows, type: "Record[]", label: "rows" } ]
+outputs: [ { name: rows, type: "Record[]", label: "rows" } ]
+forward: { handler: "koshei.opcua.OpcUaCallBlock" }
+idempotency: { strategy: NONE }
+compensation: { reversibility: IRREVERSIBLE, kind: NONE }
+retry: { maxAttempts: 1, backoff: { initialMs: 100, maxMs: 100 } }
+timeoutMs: 30000
+sideEffects: [ACTUATION]
+human: { requireApprovalBefore: true }

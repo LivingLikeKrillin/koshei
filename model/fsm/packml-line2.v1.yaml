@@ -1,0 +1,16 @@
+name: packml-line2
+unit: line2
+version: v1
+stateNode: line2.stateCurrent
+states:
+  - { id: Idle,     code: 4 }
+  - { id: Execute,  code: 6 }
+  - { id: Held,     code: 11 }
+  - { id: Complete, code: 17 }
+  - { id: Aborted,  code: 9 }
+transitions:
+  - { id: loadRecipe, from: Idle, to: Idle, command: LoadRecipe, driver: koshei, action: { workflow: ot-recipe-stage-activate } }
+  - { id: start, from: Idle, to: Execute, command: Start, driver: field }
+  - { id: hold, from: Execute, to: Held, command: Hold, driver: field }
+  - { id: complete, from: Execute, to: Complete, command: null, driver: field }
+  - { id: abort, from: Execute, to: Aborted, command: Abort, driver: field }

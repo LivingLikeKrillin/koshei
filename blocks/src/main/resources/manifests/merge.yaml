@@ -1,0 +1,18 @@
+id: merge
+version: 1.0.0
+displayName: "병합"
+description: "두 입력 행집합을 결정적으로 연결 (left + right)"
+category: transform
+params: []
+inputs:
+  - { name: left,  type: "Record[]", label: "왼쪽 입력" }
+  - { name: right, type: "Record[]", label: "오른쪽 입력" }
+outputs:
+  - { name: out, type: "Record[]", label: "병합 결과" }
+forward: { handler: "koshei.blocks.MergeBlock" }
+idempotency: { strategy: NONE }
+compensation: { reversibility: REVERSIBLE, kind: NONE }
+retry: { maxAttempts: 3, backoff: { initialMs: 100, maxMs: 1000 } }
+timeoutMs: 30000
+sideEffects: [NONE]
+human: { requireApprovalBefore: false }

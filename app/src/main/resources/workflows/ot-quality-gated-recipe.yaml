@@ -1,0 +1,9 @@
+name: ot-quality-gated-recipe
+# R2 delegation seam: stage recipe (reversible OPC-UA write) -> external ML quality-score gate
+# (delegate.score, fail-closed) -> activate (irreversible, human-gated). A sub-threshold score fails
+# closed and the reverse-topo unwind RESTOREs the staged setpoints; activate never fires.
+steps:
+  - { block: db.read,        version: "1.0.0", id: sensorRead }
+  - { block: opcua.write,    version: "1.0.0", id: stageRecipe }
+  - { block: delegate.score, version: "1.0.0", id: scoreQuality, params: { endpoint: quality-scorer } }
+  - { block: opcua.call,     version: "1.0.0", id: activateRecipe }

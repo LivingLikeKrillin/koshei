@@ -1,0 +1,7 @@
+{
+  "name": "ot-safe-hold",
+  "steps": [
+    { "blockId": "db.read",    "pinnedVersion": "1.0.0", "id": "read",         "params": { "table": "source_rows" } },
+    { "blockId": "opcua.call", "pinnedVersion": "1.0.0", "id": "safeHoldCall", "wiring": { "rows": "read.rows" } }
+  ]
+}

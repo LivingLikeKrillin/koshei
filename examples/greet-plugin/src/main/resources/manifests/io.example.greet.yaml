@@ -1,0 +1,11 @@
+id: io.example.greet
+version: "1.0.0"
+displayName: "Greet"
+category: transform
+forward: { handler: "io.example.GreetBlock" }
+idempotency: { strategy: NONE }
+compensation: { reversibility: REVERSIBLE, kind: NONE }
+retry: { maxAttempts: 1, backoff: { initialMs: 100, maxMs: 100 } }
+timeoutMs: 30000
+sideEffects: [NONE]
+human: { requireApprovalBefore: false }

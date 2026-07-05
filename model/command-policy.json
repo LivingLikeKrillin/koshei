@@ -1,0 +1,5 @@
+{ "default": "deny",
+  "rules": [
+    { "id": "rpm-ok",  "node": "recipe.rpmSetpoint",  "allow": true },
+    { "id": "temp-ok", "node": "recipe.tempSetpoint", "allow": true }
+  ] }

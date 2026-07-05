@@ -1,0 +1,10 @@
+{
+  "name": "ot-recipe-apply",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "sensorRead",   "params": { "table": "source_rows" } },
+    { "blockId": "db.upsert",     "pinnedVersion": "1.2.0", "id": "recordPlan",   "params": { "table": "target_rows" }, "wiring": { "rows": "sensorRead.rows" } },
+    { "blockId": "notify.email",  "pinnedVersion": "1.0.0", "id": "interlockAck", "wiring": { "rows": "recordPlan.written" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "preflight",    "wiring": { "rows": "interlockAck.rows" } },
+    { "blockId": "actuate",       "pinnedVersion": "1.0.0", "id": "applyPLC",     "wiring": { "rows": "preflight.rows" } }
+  ]
+}

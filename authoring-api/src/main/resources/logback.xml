@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Authoring-API logging. Without this file the service ran at raw-logback verbosity (framework DEBUG/TRACE):
+  thousands of lines/min of synchronous I/O that, under the all-in-one live gate (6+ JVMs on one host),
+  starved the Sparkplug edge-session's Paho keepalive/publish thread. Root is INFO; the emit surface stays
+  at DEBUG so the governance publish path (SparkplugEdgeSession.publishNdata / GovernanceEventEmitter.observe)
+  remains diagnosable in the live gate.
+-->
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Emit surface: keep DEBUG so the Sparkplug publish decision is visible (dropped vs failed vs sent). -->
+  <logger name="koshei.authoring.emit" level="DEBUG"/>
+  <logger name="koshei.opcua" level="DEBUG"/>
+
+  <!-- Quiet the frameworks — a governance service must not run at DEBUG/TRACE by default. -->
+  <logger name="org.springframework" level="INFO"/>
+  <logger name="org.eclipse.paho" level="WARN"/>
+  <logger name="org.eclipse.tahu" level="WARN"/>
+  <logger name="com.zaxxer.hikari" level="INFO"/>
+  <logger name="io.temporal" level="INFO"/>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>

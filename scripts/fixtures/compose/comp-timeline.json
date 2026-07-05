@@ -1,0 +1,9 @@
+{
+  "name": "comp-timeline",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "src",  "params": { "table": "source_rows" } },
+    { "blockId": "db.upsert",     "pinnedVersion": "1.2.0", "id": "m",    "params": { "table": "target_rows" }, "wiring": { "rows": "src.rows" } },
+    { "blockId": "notify.email",  "pinnedVersion": "1.0.0", "id": "n",    "wiring": { "rows": "m.written" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "sink", "wiring": { "rows": "n.rows" } }
+  ]
+}

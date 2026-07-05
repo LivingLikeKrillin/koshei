@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: koshei
+      POSTGRES_PASSWORD: koshei
+      POSTGRES_DB: koshei
+    ports: ["15432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U koshei"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    depends_on: [postgres]
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: koshei
+      POSTGRES_PWD: koshei
+      POSTGRES_SEEDS: postgres
+    ports: ["7233:7233"]
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    depends_on: [temporal]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports: ["18080:8080"]
+  conductor:
+    image: conductoross/conductor-standalone:3.15.0
+    # self-contained standalone (in-memory + embedded redis/es) — data lost on restart, fine for the gate.
+    ports: ["18088:8080"]
+    healthcheck:
+      # R-1: the standalone image's health endpoint is /health (NOT /api/health, which 404s).
+      test: ["CMD-SHELL", "curl -fs http://localhost:8080/health | grep -q '\"healthy\":true' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s

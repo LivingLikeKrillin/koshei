@@ -1,0 +1,16 @@
+id: delegate.score
+version: 1.0.0
+displayName: "Delegate: ML quality-score gate"
+description: "Call an external scoring service (governed: deny-by-default + threshold); fail-closed if score < threshold"
+category: external
+params:
+  - { name: endpoint, type: String, label: "scoring endpoint id" }
+inputs:  [ { name: rows, type: "Record[]", label: "features" } ]
+outputs: [ { name: rows, type: "Record[]", label: "rows" } ]
+forward: { handler: "koshei.delegation.DelegateScoreBlock" }
+idempotency: { strategy: NONE }
+compensation: { reversibility: REVERSIBLE, kind: NONE }   # read-only call -> nothing to undo (NOOP compensate)
+retry: { maxAttempts: 1, backoff: { initialMs: 100, maxMs: 100 } }
+timeoutMs: 30000
+sideEffects: [EXTERNAL_CALL]
+human: { requireApprovalBefore: false }

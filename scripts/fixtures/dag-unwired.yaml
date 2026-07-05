@@ -1,0 +1,5 @@
+name: dag-unwired
+steps:
+  - { block: db.read,       version: "1.0.0", id: src }
+  - { block: transform.map, version: "1.0.0", id: b, wiring: { rows: "src.rows" } }
+  - { block: merge,         version: "1.0.0", id: join, wiring: { left: "b.rows" } }

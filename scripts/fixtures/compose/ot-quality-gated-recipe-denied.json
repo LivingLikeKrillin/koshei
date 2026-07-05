@@ -1,0 +1,9 @@
+{
+  "name": "ot-quality-gated-recipe-denied",
+  "steps": [
+    { "blockId": "db.read",        "pinnedVersion": "1.0.0", "id": "sensorRead",     "params": { "table": "source_rows" } },
+    { "blockId": "opcua.write",    "pinnedVersion": "1.0.0", "id": "stageRecipe",    "wiring": { "rows": "sensorRead.rows" } },
+    { "blockId": "delegate.score", "pinnedVersion": "1.0.0", "id": "scoreQuality",   "params": { "endpoint": "rogue-scorer" }, "wiring": { "rows": "stageRecipe.rows" } },
+    { "blockId": "opcua.call",     "pinnedVersion": "1.0.0", "id": "activateRecipe", "wiring": { "rows": "scoreQuality.rows" } }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "diamond",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "src",  "params": { "table": "source_rows" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "b",    "wiring": { "rows": "src.rows" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "c",    "wiring": { "rows": "src.rows" } },
+    { "blockId": "merge",         "pinnedVersion": "1.0.0", "id": "join", "wiring": { "left": "b.rows", "right": "c.rows" } },
+    { "blockId": "db.upsert",     "pinnedVersion": "1.2.0", "id": "sink", "params": { "table": "target_rows" }, "wiring": { "rows": "join.out" } }
+  ]
+}

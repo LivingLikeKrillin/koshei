@@ -1,0 +1,27 @@
+id: __ID__
+version: "0.1.0"
+category: transform
+displayName: "__ID__ block"
+description: "Scaffolded block for __ID__"
+params: []
+inputs:
+  - { name: input, type: string }
+outputs:
+  - { name: result, type: string }
+forward:
+  handler: __HANDLER__
+idempotency:
+  strategy: NATURAL
+compensation:
+  reversibility: REVERSIBLE
+  kind: NONE
+stateBinding: []
+retry:
+  maxAttempts: 3
+  backoff:
+    initialMs: 100
+    maxMs: 10000
+timeoutMs: 30000
+sideEffects: [NONE]
+human:
+  requireApprovalBefore: false

@@ -1,0 +1,7 @@
+name: dag-diamond
+steps:
+  - { block: db.read,       version: "1.0.0", id: src }
+  - { block: transform.map, version: "1.0.0", id: b, wiring: { rows: "src.rows" } }
+  - { block: transform.map, version: "1.0.0", id: c, wiring: { rows: "src.rows" } }
+  - { block: merge,         version: "1.0.0", id: join, wiring: { left: "b.rows", right: "c.rows" } }
+  - { block: db.upsert,     version: "1.2.0", id: sink, params: { table: target_rows }, wiring: { rows: "join.out" } }

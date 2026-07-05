@@ -1,0 +1,23 @@
+id: notify.email
+version: 1.0.0
+displayName: "이메일 알림"
+description: "행 단위 이메일 발송 (in-memory sink)"
+category: sink
+params: []
+inputs:
+  - { name: rows, type: "Record[]", label: "입력 행" }
+outputs:
+  - { name: rows, type: "Record[]", label: "출력 행" }
+forward: { handler: "koshei.blocks.NotifyEmailBlock" }
+idempotency: { strategy: KEY_DEDUP, keyExpression: "row:id" }
+compensation:
+  reversibility: MITIGATABLE
+  kind: CONTEXTUAL
+  handler: "koshei.blocks.NotifyEmailBlock#compensate"
+  requiresState: [sent]
+stateBinding:
+  - { key: sent, description: "이메일 발송 여부" }
+retry: { maxAttempts: 3, backoff: { initialMs: 100, maxMs: 1000 } }
+timeoutMs: 30000
+sideEffects: [MESSAGE_SEND]
+human: { requireApprovalBefore: false }

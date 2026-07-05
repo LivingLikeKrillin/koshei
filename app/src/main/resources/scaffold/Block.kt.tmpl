@@ -1,0 +1,23 @@
+package __PACKAGE__
+
+import koshei.sdk.Block
+import koshei.sdk.BlockInput
+import koshei.sdk.BlockOutput
+import koshei.sdk.CompensationAction
+import koshei.sdk.CompensationContext
+
+class __CLASS__ : Block {
+    override val id: String = "__ID__"
+
+    override fun forward(input: BlockInput): BlockOutput {
+        // TODO: implement forward logic for __ID__
+        // BlockOutput(rows, boundState): pass rows through by default; emit boundState keys your
+        // compensation needs (must match the manifest's compensation.requiresState / stateBinding).
+        return BlockOutput(rows = input.rows)
+    }
+
+    override fun compensate(boundState: Map<String, String>, ctx: CompensationContext): CompensationAction {
+        // TODO: implement compensation logic for __ID__
+        return CompensationAction("NOOP", "no compensation declared")
+    }
+}

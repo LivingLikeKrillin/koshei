@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="830" viewBox="0 0 1280 830" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="agrey" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#57606a"/></marker>
+    <marker id="ablue" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0969da"/></marker>
+  </defs>
+
+  <rect x="8" y="8" width="1264" height="814" rx="14" fill="#ffffff" stroke="#d0d7de"/>
+
+  <!-- title -->
+  <text x="32" y="40" font-size="16" font-weight="700" fill="#1f2328">IIoT architecture — two orthogonal axes (data plane &#215; control plane)</text>
+
+  <!-- legend (left of banner) -->
+  <g>
+    <line x1="40" y1="80" x2="72" y2="80" stroke="#57606a" stroke-width="1.6" marker-end="url(#agrey)"/>
+    <text x="80" y="84" font-size="11" fill="#57606a">data publish (NDATA)</text>
+    <line x1="40" y1="104" x2="72" y2="104" stroke="#57606a" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#agrey)"/>
+    <text x="80" y="108" font-size="11" fill="#57606a">observe &#183; subscribe (drift)</text>
+    <line x1="40" y1="128" x2="72" y2="128" stroke="#0969da" stroke-width="1.6" marker-end="url(#ablue)"/>
+    <text x="80" y="132" font-size="11" fill="#0969da">governance &#183; downward command</text>
+  </g>
+
+  <!-- koshei D4 banner (top, spans both axes) -->
+  <rect x="340" y="64" width="600" height="94" rx="6" fill="#eaf3ea" stroke="#1a7f37" stroke-width="1.6"/>
+  <text x="640" y="96" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">koshei — D4 orchestration &amp; governance</text>
+  <text x="640" y="118" text-anchor="middle" font-size="11" fill="#57606a">Git canonical model = system-of-record &#183; deny-by-default authorization</text>
+  <text x="640" y="136" text-anchor="middle" font-size="11" fill="#57606a">durable saga &#183; genealogy lockpoint &#183; human gate — restores what UNS dissolves</text>
+
+  <!-- ================= LEFT LANE : ISA-95 control axis ================= -->
+  <rect x="56" y="196" width="536" height="576" rx="10" fill="#fbfcfd" stroke="#e6e9ee"/>
+  <text x="72" y="220" font-size="11" font-weight="700" fill="#8b95a1" letter-spacing="1">ISA-95 &#183; PURDUE — CONTROL / GOVERNANCE AXIS (LAYERED)</text>
+  <text x="72" y="238" font-size="10" fill="#57606a">commands flow to the adjacent level only &#183; single-writer</text>
+
+  <rect x="88" y="252" width="472" height="80" rx="6" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="324" y="290" text-anchor="middle" font-size="12.5" fill="#1f2328">L4 &#183; ERP / business planning</text>
+  <text x="324" y="310" text-anchor="middle" font-size="11" fill="#57606a">day–month cadence &#183; consumer</text>
+
+  <rect x="88" y="354" width="472" height="80" rx="6" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="324" y="392" text-anchor="middle" font-size="12.5" fill="#1f2328">L3 &#183; MES / operations &amp; execution</text>
+  <text x="324" y="412" text-anchor="middle" font-size="11" fill="#57606a">work orders &#183; genealogy &#183; quality</text>
+
+  <rect x="88" y="456" width="472" height="80" rx="6" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="324" y="494" text-anchor="middle" font-size="12.5" fill="#1f2328">L2 &#183; SCADA / supervisory control &#183; HMI</text>
+  <text x="324" y="514" text-anchor="middle" font-size="11" fill="#57606a">second cadence &#183; supervisory</text>
+
+  <rect x="88" y="558" width="472" height="170" rx="6" fill="#f6f8fa" stroke="#d0d7de"/>
+  <text x="324" y="600" text-anchor="middle" font-size="12.5" fill="#1f2328">L1 &#183; L0 — Field &#183; PLC &#183; sensors / actuators</text>
+  <text x="324" y="622" text-anchor="middle" font-size="11" fill="#57606a">D1 Safety &#183; D2 Hard-RT</text>
+  <text x="324" y="642" text-anchor="middle" font-size="11" fill="#57606a">certified &amp; untouchable — koshei never enters</text>
+
+  <!-- ================= RIGHT LANE : UNS data axis ================= -->
+  <rect x="680" y="196" width="536" height="576" rx="10" fill="#fbfcfd" stroke="#e6e9ee"/>
+  <text x="696" y="220" font-size="11" font-weight="700" fill="#8b95a1" letter-spacing="1">UNS &#183; SPARKPLUG — DATA AXIS (FLAT)</text>
+  <text x="696" y="238" font-size="10" fill="#57606a">single namespace &#183; report-by-exception &#183; anyone pub/sub</text>
+
+  <rect x="712" y="256" width="488" height="472" rx="6" fill="#f0f4f8" stroke="#d0d7de"/>
+  <text x="956" y="286" text-anchor="middle" font-size="12" fill="#1f2328">single UNS namespace</text>
+  <text x="956" y="305" text-anchor="middle" font-size="11" fill="#57606a">enterprise / site / area / line / cell …</text>
+
+  <!-- collapse zone (spans L2 + L3 heights) -->
+  <rect x="728" y="352" width="456" height="198" rx="6" fill="#ffebe9" stroke="#cf222e" stroke-width="1.4" stroke-dasharray="6 3"/>
+  <text x="956" y="382" text-anchor="middle" font-size="12.5" font-weight="600" fill="#cf222e">&#9888; L2 / L3 collapse</text>
+  <text x="956" y="406" text-anchor="middle" font-size="11" fill="#1f2328">supervisory (L2) and operations (L3) blur into one namespace</text>
+  <text x="956" y="426" text-anchor="middle" font-size="11" fill="#1f2328">point-to-point wiring disappears, but—</text>
+  <text x="956" y="452" text-anchor="middle" font-size="11.5" font-weight="600" fill="#cf222e">system-of-record &#183; authorization &#183; genealogy authority = vacuum</text>
+
+  <!-- restoration callout : koshei fills the vacuum (pairs with collapse box) -->
+  <rect x="728" y="576" width="456" height="136" rx="6" fill="#eaf3ea" stroke="#1a7f37" stroke-width="1.4"/>
+  <text x="956" y="604" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1a7f37">koshei D4 — fills this vacuum</text>
+  <text x="956" y="630" text-anchor="middle" font-size="11" fill="#1f2328">authority → Git canonical = system-of-record</text>
+  <text x="956" y="652" text-anchor="middle" font-size="11" fill="#1f2328">authorization → deny-by-default policy</text>
+  <text x="956" y="674" text-anchor="middle" font-size="11" fill="#1f2328">genealogy → lockpoint &#183; human gate</text>
+
+  <!-- ================= EDGES ================= -->
+  <!-- data publish : each ISA-95 level -> UNS bus -->
+  <polyline points="560,292 712,292" fill="none" stroke="#57606a" stroke-width="1.6" marker-end="url(#agrey)"/>
+  <g><rect x="596" y="276" width="52" height="16" fill="#ffffff"/><text x="600" y="288" font-size="11" fill="#57606a">publish</text></g>
+  <polyline points="560,394 728,394" fill="none" stroke="#57606a" stroke-width="1.6" marker-end="url(#agrey)"/>
+  <polyline points="560,496 728,496" fill="none" stroke="#57606a" stroke-width="1.6" marker-end="url(#agrey)"/>
+  <polyline points="560,643 712,643" fill="none" stroke="#57606a" stroke-width="1.6" marker-end="url(#agrey)"/>
+
+  <!-- observation : UNS bus -> koshei (dashed) -->
+  <polyline points="1080,256 1080,180 900,180 900,158" fill="none" stroke="#57606a" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#agrey)"/>
+  <g><rect x="1000" y="164" width="168" height="16" fill="#ffffff"/><text x="1004" y="176" font-size="11" fill="#57606a">observe &#183; subscribe drift</text></g>
+
+  <!-- governed command spine : koshei -> down ISA-95 axis -> field -->
+  <polyline points="360,158 360,182 72,182 72,643 88,643" fill="none" stroke="#0969da" stroke-width="1.6" marker-end="url(#ablue)"/>
+  <g><rect x="60" y="300" width="162" height="16" fill="#fbfcfd"/><text x="64" y="312" font-size="11" fill="#0969da">&#9312; D4 governed injection</text></g>
+  <g><rect x="60" y="486" width="120" height="16" fill="#f6f8fa"/><text x="64" y="498" font-size="11" fill="#0969da">&#9313; single-writer</text></g>
+  <g><rect x="100" y="656" width="194" height="16" fill="#f6f8fa"/><text x="104" y="668" font-size="11" fill="#0969da">&#9314; authorized actuation = edge</text></g>
+
+  <!-- bottom caption -->
+  <text x="640" y="802" text-anchor="middle" font-size="12.5" fill="#1f2328">Data flat (UNS) &#183; control layered (ISA-95) — koshei owns the boundary at D4</text>
+</svg>
