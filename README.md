@@ -1,5 +1,10 @@
 # Koshei
 
+[![License: PolyForm NC](https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-blue.svg)](LICENSE.md)
+![Kotlin](https://img.shields.io/badge/Kotlin-JDK_21-7F52FF?logo=kotlin&logoColor=white)
+![Engines: Temporal | Conductor](https://img.shields.io/badge/engines-Temporal_%7C_Conductor-2088FF)
+![Status: proof of concept](https://img.shields.io/badge/status-proof--of--concept-orange)
+
 > An **engine-neutral**, contract-driven durable-saga platform for **transactional OT/IT integration**. An engineer declares each step's resilience policy *once* in a YAML **block contract**; the runtime derives idempotency, reverse-order saga compensation, retry, and human-gating from it — and the *same* contract compiles to an engine-neutral IR that runs on **both Temporal and Conductor**, observed in the **same operator console**. A complementary layer to IIoT/DataOps platforms (Ignition, Litmus, ThingWorx, NiFi), **not** a competitor.
 
 ![On failure, completed work rolls back in reverse order and the PLC never fires](docs/demo/03-failsafe.gif)
