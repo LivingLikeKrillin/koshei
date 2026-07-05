@@ -1,0 +1,25 @@
+id: db.upsert
+version: 1.2.0
+displayName: "DB 업서트"
+description: "PK 기준 upsert"
+category: sink
+params:
+  - { name: table, type: string, required: true }
+inputs:
+  - { name: rows, type: "Record[]" }
+outputs:
+  - { name: written, type: "Record[]" }
+forward: { handler: "koshei.blocks.DbUpsertBlock" }
+idempotency: { strategy: UPSERT, keyExpression: "row:id" }
+compensation:
+  reversibility: REVERSIBLE
+  kind: STATIC
+  handler: "koshei.blocks.DbUpsertBlock#compensate"
+  requiresState: [priorValues, insertedIds]
+stateBinding:
+  - { key: priorValues, description: "prior snapshot" }
+  - { key: insertedIds, description: "newly inserted PKs" }
+retry: { maxAttempts: 5, backoff: { initialMs: 200, maxMs: 10000 } }
+timeoutMs: 30000
+sideEffects: [DB_WRITE]
+human: { requireApprovalBefore: false }

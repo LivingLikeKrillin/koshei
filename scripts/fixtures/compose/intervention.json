@@ -1,0 +1,8 @@
+{
+  "name": "intervention",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "src",  "params": { "table": "source_rows" } },
+    { "blockId": "db.upsert",     "pinnedVersion": "1.2.0", "id": "mid",  "params": { "table": "target_rows" }, "wiring": { "rows": "src.rows" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "sink", "wiring": { "rows": "mid.written" } }
+  ]
+}

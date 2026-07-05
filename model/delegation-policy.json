@@ -1,0 +1,12 @@
+{
+  "default": "deny",
+  "endpoints": [
+    {
+      "id": "quality-scorer",
+      "url": "http://localhost:9099/analytics/score",
+      "metric": "qualityScore",
+      "threshold": 0.80,
+      "allow": true
+    }
+  ]
+}

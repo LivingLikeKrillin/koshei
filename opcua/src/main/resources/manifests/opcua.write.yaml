@@ -1,0 +1,21 @@
+id: opcua.write
+version: 1.0.0
+displayName: "OPC-UA stage (setpoint write)"
+description: "Stage recipe setpoints to an OPC-UA endpoint (reversible; EURange-bounded; prior-value capture)"
+category: external
+params: []
+inputs:  [ { name: rows, type: "Record[]", label: "setpoints" } ]
+outputs: [ { name: rows, type: "Record[]", label: "rows" } ]
+forward: { handler: "koshei.opcua.OpcUaWriteBlock" }
+idempotency: { strategy: NONE }
+compensation:
+  reversibility: REVERSIBLE
+  kind: STATIC
+  handler: "koshei.opcua.OpcUaWriteBlock#compensate"
+  requiresState: [priorSetpoints]
+stateBinding:
+  - { key: priorSetpoints, description: "captured prior node values for RESTORE" }
+retry: { maxAttempts: 1, backoff: { initialMs: 100, maxMs: 100 } }
+timeoutMs: 30000
+sideEffects: [EXTERNAL_CALL]
+human: { requireApprovalBefore: false }

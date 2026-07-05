@@ -1,0 +1,24 @@
+{
+  "id": "io.example.canvasdemo",
+  "version": "1.0.0",
+  "category": "transform",
+  "displayName": "캔버스 데모",
+  "description": "v0.3d 오소링 게이트용 캔버스-레디 데모 블록",
+  "params": [
+    { "name": "mode", "type": "string", "required": true, "label": "모드", "help": "동작 모드", "default": "fast", "widget": "select", "enumValues": ["fast", "safe"] },
+    { "name": "tag", "type": "string", "required": false, "label": "태그", "help": "선택 태그" }
+  ],
+  "inputs": [
+    { "name": "rows", "type": "Record[]", "label": "입력 행" }
+  ],
+  "outputs": [
+    { "name": "out", "type": "Record[]", "label": "출력 행" }
+  ],
+  "forward": { "handler": "io.example.GreetBlock" },
+  "idempotency": { "strategy": "NATURAL" },
+  "compensation": { "reversibility": "REVERSIBLE", "kind": "NONE" },
+  "retry": { "maxAttempts": 3, "backoff": { "initialMs": 100, "maxMs": 1000 } },
+  "timeoutMs": 30000,
+  "sideEffects": ["NONE"],
+  "human": { "requireApprovalBefore": false }
+}

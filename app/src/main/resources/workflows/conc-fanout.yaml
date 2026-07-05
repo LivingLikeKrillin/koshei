@@ -1,0 +1,8 @@
+name: conc-fanout
+steps:
+  - { block: db.read,       version: "1.0.0", id: src }
+  - { block: transform.map, version: "1.0.0", id: p1, wiring: { rows: "src.rows" } }
+  - { block: transform.map, version: "1.0.0", id: p2, wiring: { rows: "src.rows" } }
+  - { block: transform.map, version: "1.0.0", id: p3, wiring: { rows: "src.rows" } }
+  - { block: merge,         version: "1.0.0", id: join, wiring: { left: "p1.rows", right: "p2.rows" } }
+  - { block: db.upsert,     version: "1.2.0", id: sink, params: { table: target_rows }, wiring: { rows: "join.out" } }

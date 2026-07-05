@@ -1,0 +1,14 @@
+# PackML/ISA-88 unit — L0 interface exemplar (ILLUSTRATIVE, NOT RUNNABLE in R1).
+# Structure + state/command codes are grounded in PackML/OMAC (real, published); numeric ranges
+# are SYNTHETIC/illustrative. NOT executable by R1's Double-only OPC-UA write-path (Int/Method tags
+# need the R4 typed write-path); this file is a schema/standards exemplar + the substrate the R4
+# PackML state-model (FSM) will drive. It is NOT loaded as a runnable site model.
+endpoint: "opc.tcp://localhost:48400"
+nodes:
+  packml.stateCurrent:  { nodeId: "ns=4;s=PackML/Status/StateCurrent", type: Int }      # real PackML codes: 4=Idle,6=Execute,17=Complete,...
+  packml.cntrlCmd:      { nodeId: "ns=4;s=PackML/Command/CntrlCmd",   type: Int }        # real PackML cmds: Reset/Start/Stop/Hold/Abort/...
+  packml.unitMode:      { nodeId: "ns=4;s=PackML/Command/UnitMode",   type: Int }
+  packml.machSpeedCmd:  { nodeId: "ns=4;s=PackML/Command/MachSpeed",  type: Double, euRange: { low: 0, high: 100 } }   # range synthetic
+activate:
+  command:  { nodeId: "ns=4;s=PackML/Command/Execute", type: Method }
+  doneNode: { nodeId: "ns=4;s=PackML/Status/Done",     type: Boolean }

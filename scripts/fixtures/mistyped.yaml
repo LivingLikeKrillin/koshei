@@ -1,0 +1,4 @@
+name: mistyped
+steps:
+  - { block: db.read, version: "1.0.0" }
+  - { block: test.stringsink, version: "1.0.0" }

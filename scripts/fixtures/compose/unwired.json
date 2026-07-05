@@ -1,0 +1,8 @@
+{
+  "name": "unwired",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "src",  "params": { "table": "source_rows" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "b",    "wiring": { "rows": "src.rows" } },
+    { "blockId": "merge",         "pinnedVersion": "1.0.0", "id": "join", "wiring": { "left": "b.rows" } }
+  ]
+}

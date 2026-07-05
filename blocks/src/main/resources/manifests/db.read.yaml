@@ -1,0 +1,18 @@
+id: db.read
+version: 1.0.0
+displayName: "DB 읽기"
+description: "source_rows 전체 읽기"
+category: source
+params: []
+inputs: []
+outputs:
+  - { name: rows, type: "Record[]", label: "출력 행" }
+forward: { handler: "koshei.blocks.DbReadBlock" }
+idempotency: { strategy: NATURAL }
+compensation:
+  reversibility: REVERSIBLE
+  kind: NONE
+retry: { maxAttempts: 5, backoff: { initialMs: 200, maxMs: 10000 } }
+timeoutMs: 30000
+sideEffects: [NONE]
+human: { requireApprovalBefore: false }

@@ -1,0 +1,14 @@
+name: ot-recipe-stage-activate
+# R1 OPC-UA path: a stage→activate recipe saga that drives a governed OPC-UA endpoint.
+# Distinct from ot-recipe-apply (the actuate-fake anchor used by run-scenario-gate + demo GIFs):
+# the final two steps are real OPC-UA operations — stageRecipe (reversible setpoint write) and
+# activateRecipe (irreversible, human-gated rising-edge confirm). Linear chain (implicit wiring);
+# the explicit JSON fixture (scripts/fixtures/compose/ot-recipe-stage-activate.json) carries the
+# same DAG with explicit wiring for the compose-run REST flow exercised by run-opcua-gate.sh.
+steps:
+  - { block: db.read,       version: "1.0.0", id: sensorRead }
+  - { block: db.upsert,     version: "1.2.0", id: recordPlan, params: { table: target_rows } }
+  - { block: notify.email,  version: "1.0.0", id: interlockAck }
+  - { block: transform.map, version: "1.0.0", id: preflight }
+  - { block: opcua.write,   version: "1.0.0", id: stageRecipe }
+  - { block: opcua.call,    version: "1.0.0", id: activateRecipe }

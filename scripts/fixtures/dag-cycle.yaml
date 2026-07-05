@@ -1,0 +1,4 @@
+name: dag-cycle
+steps:
+  - { block: transform.map, version: "1.0.0", id: x, wiring: { rows: "y.rows" } }
+  - { block: transform.map, version: "1.0.0", id: y, wiring: { rows: "x.rows" } }

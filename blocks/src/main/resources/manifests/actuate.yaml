@@ -1,0 +1,19 @@
+id: actuate
+version: 1.0.0
+displayName: "액추에이션"
+description: "외부 액추에이션 (사전 승인 필요, 비가역)"
+category: external
+params: []
+inputs:
+  - { name: rows, type: "Record[]", label: "입력 행" }
+outputs:
+  - { name: rows, type: "Record[]", label: "출력 행" }
+forward: { handler: "koshei.blocks.ActuateBlock" }
+idempotency: { strategy: NONE }
+compensation:
+  reversibility: IRREVERSIBLE
+  kind: NONE
+retry: { maxAttempts: 1, backoff: { initialMs: 100, maxMs: 100 } }
+timeoutMs: 30000
+sideEffects: [ACTUATION]
+human: { requireApprovalBefore: true }

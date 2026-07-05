@@ -1,0 +1,15 @@
+endpoint: "opc.tcp://localhost:48400"
+nodes:
+  recipe.rpmSetpoint:  { nodeId: "ns=2;s=Recipe/Rpm",  type: Double, euRange: { low: 0, high: 3000 } }
+  recipe.tempSetpoint: { nodeId: "ns=2;s=Recipe/Temp", type: Double, euRange: { low: 0, high: 450  } }
+  line1.stateCurrent:  { nodeId: "ns=2;s=Line1/StateCurrent", type: Double }   # R4 FSM state read-node (PackML code as Double)
+  line2.stateCurrent:  { nodeId: "ns=2;s=Line2/StateCurrent", type: Double }   # R4 canary: 2nd unit for the canary-subset proof
+# command.type: Method declares intent for fidelity; R1 backs it with a writable Boolean trigger
+# (write `true` to invoke) confirmed by a rising edge on doneNode; the master then de-asserts the
+# trigger so the equipment rearms (doneClear, below). See spec §4.6 + docs/superpowers/specs 2026-07-02.
+# NOTE: repo-root model/ is the Git-canonical authority; the classpath copy is generated from this
+# file by :opcua processResources at build time (no committed duplicate, no drift).
+activate:
+  command:  { nodeId: "ns=2;s=Recipe/ApplyRecipe", type: Method }
+  doneNode: { nodeId: "ns=2;s=Recipe/ApplyDone", type: Boolean }
+  doneClear: on-release   # equipment clears ApplyDone on trigger-release (standard rung handshake); see model/README.md

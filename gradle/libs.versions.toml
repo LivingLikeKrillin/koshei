@@ -1,0 +1,33 @@
+[versions]
+kotlin = "2.2.0"
+temporal = "1.25.1"
+jackson = "2.17.2"
+postgresql = "42.7.4"
+slf4j = "2.0.13"
+junit = "5.10.3"
+testcontainers = "1.20.1"
+conductor = "5.0.1"
+springBoot = "3.3.4"
+hikari = "5.1.0"
+milo = "0.6.12"
+tahu = "1.0.14"
+anthropicJava = "2.34.0"
+
+[libraries]
+temporal-sdk = { module = "io.temporal:temporal-sdk", version.ref = "temporal" }
+temporal-testing = { module = "io.temporal:temporal-testing", version.ref = "temporal" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+conductor-client = { module = "org.conductoross:conductor-client", version.ref = "conductor" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+milo-sdk-client = { module = "org.eclipse.milo:sdk-client", version.ref = "milo" }
+milo-sdk-server = { module = "org.eclipse.milo:sdk-server", version.ref = "milo" }
+tahu-core = { module = "org.eclipse.tahu:tahu-core", version.ref = "tahu" }
+anthropic-java = { module = "com.anthropic:anthropic-java", version.ref = "anthropicJava" }

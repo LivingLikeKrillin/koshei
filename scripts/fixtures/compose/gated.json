@@ -1,0 +1,9 @@
+{
+  "name": "gated",
+  "steps": [
+    { "blockId": "db.read",       "pinnedVersion": "1.0.0", "id": "src", "params": { "table": "source_rows" } },
+    { "blockId": "transform.map", "pinnedVersion": "1.0.0", "id": "m",   "wiring": { "rows": "src.rows" } },
+    { "blockId": "db.upsert",     "pinnedVersion": "1.2.0", "id": "up",  "params": { "table": "target_rows" }, "wiring": { "rows": "m.rows" } },
+    { "blockId": "actuate",       "pinnedVersion": "1.0.0", "id": "act", "wiring": { "rows": "up.written" } }
+  ]
+}

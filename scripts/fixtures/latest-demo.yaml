@@ -1,0 +1,7 @@
+name: latest-demo
+steps:
+  - { block: db.read, version: "latest" }
+  - { block: transform.map, version: "1.0.0" }
+  - { block: db.upsert, version: "^1.0.0", params: { table: target_rows } }
+  - { block: notify.email, version: "1.0.0" }
+  - { block: actuate, version: "1.0.0" }

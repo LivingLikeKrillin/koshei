@@ -1,0 +1,19 @@
+id: transform.map
+version: 1.0.0
+displayName: "변환 매핑"
+description: "val 컬럼 대문자화"
+category: transform
+params: []
+inputs:
+  - { name: rows, type: "Record[]", label: "입력 행" }
+outputs:
+  - { name: rows, type: "Record[]", label: "출력 행" }
+forward: { handler: "koshei.blocks.TransformMapBlock" }
+idempotency: { strategy: NONE }
+compensation:
+  reversibility: REVERSIBLE
+  kind: NONE
+retry: { maxAttempts: 3, backoff: { initialMs: 100, maxMs: 1000 } }
+timeoutMs: 30000
+sideEffects: [NONE]
+human: { requireApprovalBefore: false }
