@@ -26,6 +26,7 @@ class ReconciliationController(
     private val workflowStore: WorkflowStore,
     private val seeder: SourceRowSeeder,
     private val canonical: CanonicalSetpoints,
+    private val provenance: ProvenanceService,
 ) {
     private val log = org.slf4j.LoggerFactory.getLogger(ReconciliationController::class.java)
     private val mapper = jacksonObjectMapper()
@@ -46,6 +47,14 @@ class ReconciliationController(
         if (workflowStore.get(SAGA, SAGA_VERSION) == null)
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(mapOf("error" to "$SAGA@$SAGA_VERSION not deployed"))
 
+        val prov = when (val r = provenance.resolve()) {
+            is ProvenanceService.Result.Unresolvable ->
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to "canonical-unresolvable"))
+            is ProvenanceService.Result.Tampered ->
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to "canonical-tampered"))
+            is ProvenanceService.Result.Ok -> r
+        }
+
         seeder.seed(desired)
         val reconciliationId = req.reconciliationId ?: UUID.randomUUID().toString()
         val runId = router.port("temporal").start(reconciliationId, WorkflowInput(
@@ -57,6 +66,8 @@ class ReconciliationController(
         } catch (e: Exception) {
             log.warn("reconciliation run {} started but not recorded: {}", runId, e.toString())
         }
+        try { provenance.record(runId, prov.defRef, prov.contentSha256) }
+        catch (e: Exception) { log.warn("provenance stamp for run {} failed: {}", runId, e.toString()) }
         return ResponseEntity.ok(ReconciliationResponse(runId, reconciliationId, req.source, req.proposalRef, req.nodes))
     }
 }

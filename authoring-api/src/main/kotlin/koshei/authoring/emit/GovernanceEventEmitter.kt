@@ -22,6 +22,7 @@ open class GovernanceEventEmitter(
     private val stagedSetpoints: () -> List<GovernedNode>,          // desired canonical → STAGED nodes
     private val summarize: (String) -> List<GovernedNode> = CommandAuditReader::summarize,
     private val now: () -> Long = System::currentTimeMillis,
+    private val defRefFor: (String) -> String? = koshei.opcua.ReconciliationProvenance::defRefFor,
 ) {
     private val log = LoggerFactory.getLogger(GovernanceEventEmitter::class.java)
 
@@ -59,7 +60,7 @@ open class GovernanceEventEmitter(
         // RECONCILING after CONFIRMED/RECON_FAILED went out on the wire.
         if (terminalClaimed(runId)) return
         session.publishNdata(GovernanceEvent("RECONCILING", runId, wf(row), row.engine,
-            "IN_FLIGHT", "NONE", now(), stagedSetpoints()))
+            "IN_FLIGHT", "NONE", now(), stagedSetpoints(), defRef = defRefFor(runId)))
     }
 
     private fun emitTerminal(runId: String, row: RunStore.Row, status: String, port: EnginePort) {
@@ -73,7 +74,7 @@ open class GovernanceEventEmitter(
         // consumer needs to correlate.
         val nodeOutcome = if (type == "CONFIRMED") "CONFIRMED" else "RESTORED"
         val nodes = summarize(runId).ifEmpty { stagedSetpoints().map { it.copy(outcome = nodeOutcome) } }
-        session.publishNdata(GovernanceEvent(type, runId, wf(row), row.engine, status, comp, now(), nodes))
+        session.publishNdata(GovernanceEvent(type, runId, wf(row), row.engine, status, comp, now(), nodes, defRef = defRefFor(runId)))
     }
 
     private fun wf(row: RunStore.Row) = "${row.workflowName}:${row.workflowVersion}"

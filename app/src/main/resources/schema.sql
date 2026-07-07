@@ -46,3 +46,13 @@ CREATE TABLE IF NOT EXISTS delegation_audit (
   detail      text,
   at_millis   bigint NOT NULL
 );
+-- ③ version-reference: the Git provenance of the canonical definition that governed a reconciliation run.
+-- Stamped by ReconciliationController only when the canonical working tree is CLEAN (dirty/unresolvable are
+-- rejected 409 before run start), so def_ref is always a resolvable, round-trippable SHA.
+DROP TABLE IF EXISTS reconciliation_provenance;
+CREATE TABLE reconciliation_provenance (
+  run_id        text   NOT NULL,
+  def_ref       text   NOT NULL,   -- git last-commit SHA (provenance metadata, from the manifest)
+  content_sha256 text  NOT NULL,   -- v3: the hash koshei COMPUTED and verified (self-attested)
+  at_millis     bigint NOT NULL
+);

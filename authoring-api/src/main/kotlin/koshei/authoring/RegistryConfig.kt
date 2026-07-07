@@ -49,11 +49,10 @@ class RegistryConfig {
 
     @Bean fun sourceRowSeeder(ds: HikariDataSource): SourceRowSeeder = SourceRowSeeder(ds)
 
-    @Bean fun canonicalSetpoints(): koshei.opcua.CanonicalSetpoints {
-        val path = System.getenv("KOSHEI_RECIPE_SETPOINTS")
-        val yaml = if (path != null) java.io.File(path).readText()
-            else koshei.opcua.CanonicalSetpoints::class.java
-                .getResourceAsStream("/model/recipe-setpoints.yaml")!!.bufferedReader().use { it.readText() }
-        return koshei.opcua.CanonicalSetpoints.parse(yaml, koshei.opcua.SiteModel.default(), koshei.opcua.CommandPolicy.default())
-    }
+    @Bean fun canonicalConfig(): CanonicalConfig = CanonicalConfig.fromEnv()
+
+    @Bean fun canonicalSetpoints(cc: CanonicalConfig): koshei.opcua.CanonicalSetpoints =
+        koshei.opcua.CanonicalSetpoints.parse(cc.yamlText(), koshei.opcua.SiteModel.default(), koshei.opcua.CommandPolicy.default())
+
+    @Bean fun provenanceService(cc: CanonicalConfig): ProvenanceService = ProvenanceService(cc)
 }

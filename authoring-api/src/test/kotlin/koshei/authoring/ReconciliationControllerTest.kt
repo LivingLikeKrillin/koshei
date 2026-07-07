@@ -34,6 +34,7 @@ class ReconciliationControllerTest {
     @MockBean lateinit var workflowStore: WorkflowStore
     @MockBean lateinit var seeder: SourceRowSeeder
     @MockBean lateinit var canonical: CanonicalSetpoints
+    @MockBean lateinit var provenance: ProvenanceService
 
     @Autowired lateinit var cfg: Beans
     private val temporal: EnginePort get() = cfg.temporal
@@ -53,6 +54,7 @@ class ReconciliationControllerTest {
         given(workflowStore.get("ot-recipe-stage-activate", "1.0.0"))
             .willReturn(koshei.core.WorkflowDef("ot-recipe-stage-activate", emptyList()))
         given(temporal.start(eqOf("r1"), anyNonNull())).willReturn("run-xyz")
+        given(provenance.resolve()).willReturn(ProvenanceService.Result.Ok("d".repeat(40), "csha"))
         mvc.perform(post("/api/reconciliations").contentType(MediaType.APPLICATION_JSON)
             .content("""{"reconciliationId":"r1","nodes":["recipe.rpmSetpoint"],"source":"resequence-drift"}"""))
             .andExpect(status().isOk).andExpect(jsonPath("$.runId").value("run-xyz"))
@@ -82,6 +84,29 @@ class ReconciliationControllerTest {
         mvc.perform(post("/api/reconciliations").contentType(MediaType.APPLICATION_JSON)
             .content("""{"nodes":["recipe.rpmSetpoint"],"source":"x"}"""))
             .andExpect(status().isServiceUnavailable)
+        verify(temporal, never()).start(anyNonNull(), anyNonNull())
+    }
+
+    @Test fun `unresolvable canonical rejected 409, no run started`() {
+        given(canonical.byKey("recipe.rpmSetpoint")).willReturn(rpm)
+        given(workflowStore.get("ot-recipe-stage-activate", "1.0.0"))
+            .willReturn(koshei.core.WorkflowDef("ot-recipe-stage-activate", emptyList()))
+        given(provenance.resolve()).willReturn(ProvenanceService.Result.Unresolvable)
+        mvc.perform(post("/api/reconciliations").contentType(MediaType.APPLICATION_JSON)
+            .content("""{"nodes":["recipe.rpmSetpoint"],"source":"x"}"""))
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.error").value("canonical-unresolvable"))
+        verify(temporal, never()).start(anyNonNull(), anyNonNull())
+    }
+
+    @Test fun `tampered canonical rejected 409, no run started`() {
+        given(canonical.byKey("recipe.rpmSetpoint")).willReturn(rpm)
+        given(workflowStore.get("ot-recipe-stage-activate", "1.0.0"))
+            .willReturn(koshei.core.WorkflowDef("ot-recipe-stage-activate", emptyList()))
+        given(provenance.resolve()).willReturn(ProvenanceService.Result.Tampered)
+        mvc.perform(post("/api/reconciliations").contentType(MediaType.APPLICATION_JSON)
+            .content("""{"nodes":["recipe.rpmSetpoint"],"source":"x"}"""))
+            .andExpect(status().isConflict).andExpect(jsonPath("$.error").value("canonical-tampered"))
         verify(temporal, never()).start(anyNonNull(), anyNonNull())
     }
 }

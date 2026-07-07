@@ -19,7 +19,7 @@
 #
 # Run from the koshei repo root with the stack up + a resequence checkout:
 #   docker compose up -d
-#   RESEQUENCE_DIR="/path/to/resequence-twin-lab" bash scripts/run-integration-pov-gate.sh
+#   RESEQUENCE_DIR="/c/Users/Eisen/Desktop/Labs/[iiot]/resequence-twin-lab" bash scripts/run-integration-pov-gate.sh
 #   # expect: [GATE] PASS ... exit 0
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -67,20 +67,32 @@ fail() {
 RESEQUENCE_DIR="${RESEQUENCE_DIR:-}"
 [ -n "$RESEQUENCE_DIR" ] || fail "RESEQUENCE_DIR not set — point it at the resequence-twin-lab checkout (the dir containing control/pom.xml). No silent skip of the integration assertions."
 [ -f "$RESEQUENCE_DIR/control/pom.xml" ] || fail "no control/pom.xml under RESEQUENCE_DIR='$RESEQUENCE_DIR'"
-# Windows-mixed path (C:/...) so the resequence JVM resolves it; an MSYS /c/... path becomes an
-# invalid \c\... path inside a native Windows JVM. cygpath -m keeps forward slashes (no -D escaping).
-CANON_RAW="$(pwd)/model/recipe-setpoints.yaml"
+# v3: koshei consumes a ①-PUBLISHED canonical (no working-tree classpath fallback) — its reconcile preflight
+# needs a sibling manifest.json to verify, so integration-pov must publish too (else T1 → 409 unresolvable).
+SPARKPLUG_LAB_DIR="${SPARKPLUG_LAB_DIR:-}"
+[ -n "$SPARKPLUG_LAB_DIR" ] || fail "SPARKPLUG_LAB_DIR not set — point it at the sparkplug-governance-lab checkout (RecipePublish CLI). No silent skip."
+[ -f "$SPARKPLUG_LAB_DIR/pom.xml" ] || fail "no pom.xml under SPARKPLUG_LAB_DIR='$SPARKPLUG_LAB_DIR'"
+# ①'s registry/ is tracked → publish to a THROWAWAY dir; mvn exec:java is a Windows JVM → cygpath -m every path arg.
+REG="$SPARKPLUG_LAB_DIR/build/gate-registry"; rm -rf "$REG"
+REG_WIN="$(cygpath -m "$REG" 2>/dev/null || echo "$REG")"
+LAB_WIN="$(cygpath -m "$SPARKPLUG_LAB_DIR" 2>/dev/null || echo "$SPARKPLUG_LAB_DIR")"
+( cd "$SPARKPLUG_LAB_DIR" && mvn -q -DskipTests package && \
+  mvn -q exec:java -Dexec.mainClass=dev.krillin.sparkplug.schema.RecipePublish \
+    -Dexec.args="$REG_WIN $LAB_WIN model/recipe-setpoints.yaml line1 1.0.0" ) >"$WORK/publish.log" 2>&1 \
+  || { cat "$WORK/publish.log"; fail "① publish failed"; }
+CANON_RAW="$REG/recipe/line1/1.0.0/recipe-setpoints.yaml"
 CANON="$(cygpath -m "$CANON_RAW" 2>/dev/null || echo "$CANON_RAW")"
-[ -f "$CANON" ] || fail "missing canonical $CANON"
+[ -f "$CANON" ] || fail "published canonical missing at $CANON"
+export KOSHEI_RECIPE_SETPOINTS="$CANON"   # koshei bean reads the PUBLISHED canonical + its sibling manifest.json
 
-echo "[GATE] db=$KOSHEI_DB_URL ; opcua=$KOSHEI_OPCUA_URL ; canonical=$CANON ; resequence=$RESEQUENCE_DIR"
+echo "[GATE] db=$KOSHEI_DB_URL ; opcua=$KOSHEI_OPCUA_URL ; pub_canon=$CANON ; resequence=$RESEQUENCE_DIR"
 
 # ---------------------------------------------------------------------------
 echo "[GATE] step 0: schemas (registry + app: command_audit/source_rows/target_rows) + fault_inject + reset"
 docker compose exec -T postgres psql -U koshei -d koshei < registry/src/main/resources/registry-schema.sql >/dev/null
 docker compose exec -T postgres psql -U koshei -d koshei < app/src/main/resources/schema.sql >/dev/null
 psql_q "DROP TABLE IF EXISTS fault_inject; CREATE TABLE fault_inject (block_id text NOT NULL, phase text NOT NULL DEFAULT 'forward', PRIMARY KEY (block_id, phase))" >/dev/null
-psql_q "TRUNCATE target_rows, source_rows, workflow_def, run_index, fault_inject, command_audit" >/dev/null
+psql_q "TRUNCATE target_rows, source_rows, workflow_def, run_index, fault_inject, command_audit, reconciliation_provenance" >/dev/null
 echo "[GATE] schemas ensured; state reset"
 
 # ---------------------------------------------------------------------------
@@ -162,12 +174,12 @@ perturb "$RPM_NODE" 1200             # ungoverned drift
 wait_drift 20 || { tail -30 "$RESEQ_LOG"; curl -fsS "$DRIFT"; fail "T1 twin did not report recipe.rpmSetpoint drift"; }
 echo "[GATE] T1 twin reports RECONCILE_SETPOINT for recipe.rpmSetpoint"
 
-RID="recon-happy-1"
+RID="recon-happy-$(date +%s)"   # unique per invocation: Temporal retains prior workflowIds across worker restarts
 RESP=$(curl -fsS -X POST "$API/api/reconciliations" -H 'Content-Type: application/json' \
   -d "{\"reconciliationId\":\"$RID\",\"nodes\":[\"recipe.rpmSetpoint\"],\"source\":\"resequence-drift\",\"proposalRef\":\"t1\"}") || fail "T1 POST /reconciliations failed"
 echo "[GATE] T1 reconcile => $RESP"
 echo "$RESP" | grep -q "\"runId\":\"$RID\"" || fail "T1 expected runId=$RID"
-wait_node "$RID" activateRecipe RUNNING || fail "T1 never reached the activate gate"
+wait_node "$RID" activateRecipe AWAITING_APPROVAL || fail "T1 never reached the activate gate"   # parked human-gate state (SagaWorkflowImpl.kt:75, was RUNNING)
 curl -fsS -X POST "$API/api/runs/$RID/approve" >/dev/null || fail "T1 approve failed"
 curl -fsS "$API/api/runs/$RID?wait=true" | grep -q '"completed":true' || fail "T1 did not complete after approve"
 [ "$(aud opcua.write WRITTEN)"  -ge 1 ] || fail "T1 expected opcua.write WRITTEN >=1, got $(aud opcua.write WRITTEN)"
@@ -182,10 +194,10 @@ seed_canonical
 wait_no_drift 10 || { curl -fsS "$DRIFT"; fail "T2 field not clean at baseline"; }
 perturb "$RPM_NODE" 1200
 wait_drift 20 || fail "T2 twin did not report recipe drift"
-RID2="recon-veto-1"
+RID2="recon-veto-$(date +%s)"   # unique per invocation (see RID)
 curl -fsS -X POST "$API/api/reconciliations" -H 'Content-Type: application/json' \
   -d "{\"reconciliationId\":\"$RID2\",\"nodes\":[\"recipe.rpmSetpoint\"],\"source\":\"resequence-drift\"}" >/dev/null || fail "T2 reconcile failed"
-wait_node "$RID2" activateRecipe RUNNING || fail "T2 never reached the activate gate"
+wait_node "$RID2" activateRecipe AWAITING_APPROVAL || fail "T2 never reached the activate gate"   # parked human-gate state (SagaWorkflowImpl.kt:75, was RUNNING)
 [ "$(aud opcua.write WRITTEN)" -ge 1 ] || fail "T2 stageRecipe should have written before the gate"
 curl -fsS -X POST "$API/api/runs/$RID2/reject" >/dev/null || fail "T2 reject failed"
 curl -fsS "$API/api/runs/$RID2?wait=true" | grep -q '"completed":false' || fail "T2 rejected run should compensate"
