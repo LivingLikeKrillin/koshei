@@ -18,4 +18,5 @@ data class GovernanceEvent(
     val compOutcome: String,  // NONE | COMPENSATED | COMP_FAILED
     val atMillis: Long,
     val nodes: List<GovernedNode>,
+    val defRef: String? = null,   // ③ version reference: git SHA of the canonical that governed this run
 )

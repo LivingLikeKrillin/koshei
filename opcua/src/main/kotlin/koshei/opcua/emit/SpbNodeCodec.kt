@@ -35,6 +35,7 @@ object SpbNodeCodec {
             .addMetric(str("Governance/LastEngine", ""))
             .addMetric(str("Governance/LastStatus", ""))
             .addMetric(str("Governance/LastCompOutcome", ""))
+            .addMetric(str("Governance/DefRef", ""))
             .addMetric(MetricBuilder("Governance/LastEventTimestamp", MetricDataType.Int64, 0L).createMetric())
             .addMetric(MetricBuilder(SparkplugMeta.METRIC_NODE_REBIRTH, MetricDataType.Boolean, false).createMetric())
             .addMetric(bdSeqMetric(bdSeq))
@@ -50,6 +51,7 @@ object SpbNodeCodec {
             .addMetric(str("Governance/LastEngine", ev.engine))
             .addMetric(str("Governance/LastStatus", ev.status))
             .addMetric(str("Governance/LastCompOutcome", ev.compOutcome))
+            .addMetric(str("Governance/DefRef", ev.defRef))
             .addMetric(MetricBuilder("Governance/LastEventTimestamp", MetricDataType.Int64, ev.atMillis).createMetric())
         ev.nodes.forEach { b.addMetric(setpointMetric(it)) }
         return SparkplugBPayloadEncoder().getBytes(b.createPayload(), false)
